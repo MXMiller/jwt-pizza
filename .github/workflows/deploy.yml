@@ -13,7 +13,7 @@ jobs:
       - name: create static deployment file
         run: |
           mkdir dist
-          echo "<h1>github autoamted page test</h1>" >> dist/index.html
+          echo "<h1>github autoamted page</h1>" >> dist/index.html
 
       - name: Update pages artifact
         uses: actions/upload-pages-artifact@v3
@@ -26,7 +26,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ pizza.pizza-factory-mrm-franchise.click }}
+      url: ${{ steps.deployment.outputs.page_url }}
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
