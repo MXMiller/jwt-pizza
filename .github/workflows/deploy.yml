@@ -26,7 +26,7 @@ jobs:
       id-token: write
     environment:
       name: github-pages
-      url: ${{ steps.deployment.outputs.page_url }}
+      url: ${{ https://pizza.pizza-factory-mrm-franchise.click }}
     runs-on: ubuntu-latest
     steps:
       - name: Deploy to GitHub Pages
