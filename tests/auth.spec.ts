@@ -5,13 +5,12 @@ test('register test', async ({ page }) => {
   
   await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
   await page.getByRole('link', { name: 'Register' }).click();
-  await page.getByRole('textbox', { name: 'Full name' }).fill('bobby');
+  await page.getByRole('textbox', { name: 'Full name' }).fill('Test User');
   await page.getByRole('textbox', { name: 'Email address' }).click();
-  await page.getByRole('textbox', { name: 'Email address' }).fill('b@jwt.com');
+  await page.getByRole('textbox', { name: 'Email address' }).fill('test@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
-  await page.getByRole('textbox', { name: 'Password' }).fill('bp');
+  await page.getByRole('textbox', { name: 'Password' }).fill('testp');
   await page.getByRole('button', { name: 'Register' }).click();
-
 });
 
 test('login test', async ({ page }) => {
@@ -38,4 +37,8 @@ test('login test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).click();
   await page.getByRole('textbox', { name: 'Password' }).fill('testp');
   await page.getByRole('button', { name: 'Login' }).click();
+});
+
+test('logout test', async ({ page }) => {
+  await page.goto('http://localhost:5173/');
 });

@@ -10,11 +10,14 @@ jobs:
     name: Build
     runs-on: ubuntu-latest
     steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        
       - name: create static deployment file
         run: |
           mkdir dist
           echo "<h1>github autoamted page</h1>" >> dist/index.html
-          
+
       - name: Run tests
         run: |
           npx playwright install --with-deps chromium
