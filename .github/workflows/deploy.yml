@@ -13,18 +13,19 @@ jobs:
       - name: Checkout repository
         uses: actions/checkout@v4
 
-      - name: Install dependencies
-        run: npm ci  
-
       - name: create static deployment file
         run: |
           mkdir dist
           echo "<h1>github autoamted page</h1>" >> dist/index.html
 
+      - name: Install dependencies
+        run: npm ci  
+
       - name: Run tests
         run: |
           npx playwright install --with-deps chromium
           npm run test:coverage
+          
       - name: Update coverage
         run: |
           coverage=$(jq '.total.lines.pct' coverage/coverage-summary.json)
