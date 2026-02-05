@@ -13,7 +13,7 @@ test('register test', async ({ page }) => {
   await page.getByRole('button', { name: 'Register' }).click();
 });
 
-test('login test', async ({ page }) => {
+test('login logout test', async ({ page }) => {
   await page.route('*/**/api/auth', async (route) => {
     const loginReq = { email: 'test@jwt.com', password: 'testp' };
     const loginRes = {
@@ -37,8 +37,21 @@ test('login test', async ({ page }) => {
   await page.getByRole('textbox', { name: 'Password' }).click();
   await page.getByRole('textbox', { name: 'Password' }).fill('testp');
   await page.getByRole('button', { name: 'Login' }).click();
+  await expect(page.getByRole('link', { name: 'TU' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Logout' })).toBeVisible();
+
+  await page.route('*/**/api/auth', async (route) => {
+    const logoutReq = { email: 'test@jwt.com', password: 'testp' };
+    const logoutRes = {
+      message: 'logout successful',
+    };
+    expect(route.request().method()).toBe('DELETE');
+    await route.fulfill({ json: logoutRes });
+  });
+
+  await expect(page.getByRole('link', { name: 'Logout' })).toBeVisible();
+  await page.getByRole('link', { name: 'Logout' }).click();
+  await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
 });
 
-test('logout test', async ({ page }) => {
-  await page.goto('http://localhost:5173/');
-});
