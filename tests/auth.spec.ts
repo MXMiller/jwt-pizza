@@ -6,7 +6,7 @@ async function basicLogin(page: Page) {
     const loginReq = { email: 'test@jwt.com', password: 'testp' };
     const loginRes = {
       user: {
-        id: 3,
+        id: 1,
         name: 'Test User',
         email: 'test@jwt.com',
         roles: [{ role: 'diner' }],
@@ -32,7 +32,7 @@ test('register test', async ({ page }) => {
     const registerReq = { name: 'Test User', email: 'test@jwt.com', password: 'testp' };
     const registerRes = {
       user: {
-        id: 3,
+        id: 1,
         name: 'Test User',
         email: 'test@jwt.com',
         roles: [{ role: 'diner' }],
