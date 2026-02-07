@@ -3,12 +3,12 @@ import { Page } from 'playwright';
 
 async function basicLogin(page: Page) {
   await page.route('*/**/api/auth', async (route) => {
-    const loginReq = { email: 'test@jwt.com', password: 'testp' };
+    const loginReq = { email: 't@jwt.com', password: 'test' };
     const loginRes = {
       user: {
         id: 1,
-        name: 'Test User',
-        email: 'test@jwt.com',
+        name: 't',
+        email: 't@jwt.com',
         roles: [{ role: 'diner' }],
       },
       token: 'abcdef',
@@ -21,20 +21,20 @@ async function basicLogin(page: Page) {
   await page.goto('http://localhost:5173/');
   
   await page.getByRole('link', { name: 'Login' }).click();
-  await page.getByRole('textbox', { name: 'Email address' }).fill('test@jwt.com');
+  await page.getByRole('textbox', { name: 'Email address' }).fill('t@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
-  await page.getByRole('textbox', { name: 'Password' }).fill('testp');
+  await page.getByRole('textbox', { name: 'Password' }).fill('test');
   await page.getByRole('button', { name: 'Login' }).click();
 }
 
 test('register test', async ({ page }) => {
   await page.route('*/**/api/auth', async (route) => {
-    const registerReq = { name: 'Test User', email: 'test@jwt.com', password: 'testp' };
+    const registerReq = { name: 't', email: 't@jwt.com', password: 'test' };
     const registerRes = {
       user: {
         id: 1,
-        name: 'Test User',
-        email: 'test@jwt.com',
+        name: 't',
+        email: 't@jwt.com',
         roles: [{ role: 'diner' }],
       },
       token: 'abcdef',
@@ -48,21 +48,21 @@ test('register test', async ({ page }) => {
   
   await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
   await page.getByRole('link', { name: 'Register' }).click();
-  await page.getByRole('textbox', { name: 'Full name' }).fill('Test User');
+  await page.getByRole('textbox', { name: 'Full name' }).fill('t');
   await page.getByRole('textbox', { name: 'Email address' }).click();
-  await page.getByRole('textbox', { name: 'Email address' }).fill('test@jwt.com');
+  await page.getByRole('textbox', { name: 'Email address' }).fill('t@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
-  await page.getByRole('textbox', { name: 'Password' }).fill('testp');
+  await page.getByRole('textbox', { name: 'Password' }).fill('test');
   await page.getByRole('button', { name: 'Register' }).click();
 });
 
 test('login logout test', async ({ page }) => {
   await basicLogin(page);
-  await expect(page.getByRole('link', { name: 'TU' })).toBeVisible();
+  await expect(page.getByRole('link', { name: 't', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Logout' })).toBeVisible();
 
   await page.route('*/**/api/auth', async (route) => {
-    const logoutReq = { email: 'test@jwt.com', password: 'testp' };
+    const logoutReq = { email: 't@jwt.com', password: 'test' };
     const logoutRes = {
       message: 'logout successful',
     };
