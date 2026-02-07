@@ -1,7 +1,7 @@
 import { test, expect } from 'playwright-test-coverage';
 import { Page } from 'playwright';
 
-async function basicLogin(page: Page) {
+async function mockDinerLogin(page: Page) {
   await page.route('*/**/api/auth', async (route) => {
     const loginReq = { email: 't@jwt.com', password: 'test' };
     const loginRes = {
@@ -57,7 +57,7 @@ test('register test', async ({ page }) => {
 });
 
 test('login logout test', async ({ page }) => {
-  await basicLogin(page);
+  await mockDinerLogin(page);
   await expect(page.getByRole('link', { name: 't', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Logout' })).toBeVisible();
 
