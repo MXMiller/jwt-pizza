@@ -4,6 +4,14 @@
 
 As part of `Deliverable ⓵ Development deployment: JWT Pizza`, start up the application and debug through the code until you understand how it works. During the learning process fill out the following required pieces of information in order to demonstrate that you have successfully completed the deliverable.
 
+Logins:
+
+Diner: (t@jwt.com, pw: test)
+
+Franchisee: (f@jwt.com, pw: franchisee)
+
+Admin: (a@jwt.com, pw: admin)
+
 | User activity                                       | Frontend component | Backend endpoints | Database SQL                                                                                                                 |
 |-----------------------------------------------------|--------------------|-------------------|------------------------------------------------------------------------------------------------------------------------------|
 | View home page                                      | home.tsx           | none              | none |
