@@ -1,7 +1,7 @@
 import { test, expect } from 'playwright-test-coverage';
 import { Page } from 'playwright';
 
-async function basicLogin(page: Page) {
+async function mockDinerLogin(page: Page) {
   await page.route('*/**/api/auth', async (route) => {
     const loginReq = { email: 't@jwt.com', password: 'test' };
     const loginRes = {
@@ -28,7 +28,6 @@ async function basicLogin(page: Page) {
 }
 
 test('place order test', async ({ page }) => {
-  await basicLogin(page);
-
+  await mockDinerLogin(page);
   
 });
