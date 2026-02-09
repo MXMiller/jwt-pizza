@@ -1,32 +1,6 @@
 import { test, expect } from 'playwright-test-coverage';
 import { Page } from 'playwright';
 
-async function mockDinerLogin(page: Page) {
-  await page.route('*/**/api/auth', async (route) => {
-    const loginReq = { email: 't@jwt.com', password: 'test' };
-    const loginRes = {
-      user: {
-        id: 1,
-        name: 't',
-        email: 't@jwt.com',
-        roles: [{ role: 'diner' }],
-      },
-      token: 'abcdef',
-    };
-    expect(route.request().method()).toBe('PUT');
-    expect(route.request().postDataJSON()).toMatchObject(loginReq);
-    await route.fulfill({ json: loginRes });
-  });
-
-  await page.goto('http://localhost:5173/');
-  
-  await page.getByRole('link', { name: 'Login' }).click();
-  await page.getByRole('textbox', { name: 'Email address' }).fill('t@jwt.com');
-  await page.getByRole('textbox', { name: 'Password' }).click();
-  await page.getByRole('textbox', { name: 'Password' }).fill('test');
-  await page.getByRole('button', { name: 'Login' }).click();
-}
-
 test('register test', async ({ page }) => {
   await page.route('*/**/api/auth', async (route) => {
     const registerReq = { name: 't', email: 't@jwt.com', password: 'test' };
@@ -57,7 +31,31 @@ test('register test', async ({ page }) => {
 });
 
 test('login logout test', async ({ page }) => {
-  await mockDinerLogin(page);
+
+  await page.route('*/**/api/auth', async (route) => {
+    const loginReq = { email: 't@jwt.com', password: 'test' };
+    const loginRes = {
+      user: {
+        id: 1,
+        name: 't',
+        email: 't@jwt.com',
+        roles: [{ role: 'diner' }],
+      },
+      token: 'abcdef',
+    };
+    expect(route.request().method()).toBe('PUT');
+    expect(route.request().postDataJSON()).toMatchObject(loginReq);
+    await route.fulfill({ json: loginRes });
+  });
+
+  await page.goto('http://localhost:5173/');
+  
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('t@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('test');
+  await page.getByRole('button', { name: 'Login' }).click();
+
   await expect(page.getByRole('link', { name: 't', exact: true })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Logout' })).toBeVisible();
 
@@ -74,4 +72,22 @@ test('login logout test', async ({ page }) => {
   await page.getByRole('link', { name: 'Logout' }).click();
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'Register' })).toBeVisible();
+});
+
+test('invalid login test', async ({ page }) => {
+  
+  await page.route('*/**/api/auth', async (route) => {
+    const loginReq = { email: 't@jwt.com', password: 'wrong' };
+    await route.fulfill({ status: 404, json: { message: 'unknown user' } });
+  });
+
+  await page.goto('http://localhost:5173/');
+  
+  await page.getByRole('link', { name: 'Login' }).click();
+  await page.getByRole('textbox', { name: 'Email address' }).fill('t@jwt.com');
+  await page.getByRole('textbox', { name: 'Password' }).click();
+  await page.getByRole('textbox', { name: 'Password' }).fill('wrong');
+  await page.getByRole('button', { name: 'Login' }).click();
+
+  await expect(page.getByText('{"code":404,"message":"unknown user"}')).toBeVisible();
 });
