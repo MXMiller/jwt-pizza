@@ -18,6 +18,7 @@
     "@types/react": "^18.3.3",
     "@types/react-dom": "^18.3.0",
     "autoprefixer": "^10.4.19",
+    "jest": "^30.2.0",
     "nyc": "^17.1.0",
     "playwright-test-coverage": "^1.2.12",
     "postcss": "^8.4.38",
