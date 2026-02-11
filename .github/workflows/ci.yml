@@ -36,6 +36,12 @@ jobs:
         uses: actions/upload-pages-artifact@v3
         with:
           path: dist/
+
+      - name: Run tests
+        run: |
+          npm install
+          npx playwright install --with-deps chromium
+          npm run test:coverage
   deploy:
     needs: build
     permissions:
@@ -49,12 +55,6 @@ jobs:
       - name: Deploy to GitHub Pages
         id: deployment
         uses: actions/deploy-pages@v4
-
-      - name: Run tests
-        run: |
-          npm install
-          npx playwright install --with-deps chromium
-          npm run test:coverage
 
       - name: Update coverage
         run: |
