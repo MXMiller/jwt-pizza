@@ -637,6 +637,8 @@ test('franchisee page shows revenue increase after ordering a pizza', async ({ p
   await expect(page.getByRole('button').filter({ hasText: /^$/ })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Close' })).toBeVisible();
   await page.getByRole('button', { name: 'Close' }).click();
+  
+  await expect(page.getByRole('button', { name: 'Close' })).not.toBeVisible();
 
   //check that TEST store revenue increased
   await page.unroute('*/**/api/franchise/3');
