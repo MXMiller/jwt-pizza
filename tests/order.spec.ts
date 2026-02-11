@@ -117,6 +117,8 @@ async function mockMenu(page: Page) {
 test('order a pizza', async ({ page }) => {
   
   await page.goto('http://localhost:5173/');
+
+  await mockFranchiseeLogin(page);
   
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
@@ -251,6 +253,8 @@ test('order a pizza', async ({ page }) => {
 test('order many pizzas', async ({ page }) => {
   
   await page.goto('http://localhost:5173/');
+  
+  await mockFranchiseeLogin(page);
   
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
@@ -439,6 +443,8 @@ test('order many pizzas', async ({ page }) => {
 test('cancel order button works', async ({ page }) => {
   
   await page.goto('http://localhost:5173/');
+  
+  await mockFranchiseeLogin(page);
   
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
