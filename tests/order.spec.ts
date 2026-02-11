@@ -146,8 +146,8 @@ test('order a pizza', async ({ page }) => {
   await page.getByRole('link', { name: 'Image Description Veggie A' }).first().click();
   await expect(page.getByText('Selected pizzas:')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Checkout' })).toBeVisible();
-  await page.getByRole('button', { name: 'Checkout' }).click();
 
+  await page.unroute('*/**/api/user/me');
   await page.route('*/**/api/user/me', async (route) => {
     const meRes = {
       "id": 3,
@@ -188,6 +188,8 @@ test('order a pizza', async ({ page }) => {
     await route.fulfill({ json: orderRes });
   });
 
+  await page.getByRole('button', { name: 'Checkout' }).click();
+  
   await expect(page.getByText('So worth it')).toBeVisible();
   await expect(page.getByText('Send me that pizza right')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Pay now' })).toBeVisible();
@@ -286,8 +288,8 @@ test('order many pizzas', async ({ page }) => {
   await page.getByRole('link', { name: 'Image Description Charred' }).first().click();
   await expect(page.getByText('Selected pizzas:')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Checkout' })).toBeVisible();
-  await page.getByRole('button', { name: 'Checkout' }).click();
 
+  await page.unroute('*/**/api/user/me');
   await page.route('*/**/api/user/me', async (route) => {
     const meRes = {
       "id": 3,
@@ -347,6 +349,8 @@ test('order many pizzas', async ({ page }) => {
     expect(route.request().method()).toBe('POST');
     await route.fulfill({ json: orderRes });
   });
+
+  await page.getByRole('button', { name: 'Checkout' }).click();
 
   await expect(page.getByText('So worth it')).toBeVisible();
   await expect(page.getByText('Send me those 5 pizzas right')).toBeVisible();
@@ -463,7 +467,27 @@ test('cancel order button works', async ({ page }) => {
 
   await expect(page.getByRole('link', { name: 'Order' })).toBeVisible();
   await page.getByRole('link', { name: 'Order' }).click();
-  await page.getByRole('link', { name: 'Order' }).click();
+
+  await page.unroute('*/**/api/user/me');
+  await page.route('*/**/api/user/me', async (route) => {
+    const meRes = {
+      "id": 3,
+      "name": "pizza franchisee",
+      "email": "f@jwt.com",
+      "roles": [
+        {
+            "role": "diner"
+        },
+        {
+            "objectId": 1,
+            "role": "franchisee"
+        }
+      ],
+      "iat": 1770663563
+    };
+    expect(route.request().method()).toBe('GET');
+    await route.fulfill({ json: meRes });
+  });
   
   await page.getByRole('combobox').selectOption('1');
   await page.getByRole('link', { name: 'Image Description Veggie A' }).first().click();
