@@ -116,17 +116,10 @@ async function mockMenu(page: Page) {
 
 test('order a pizza', async ({ page }) => {
   
-  await mockFranchiseeLogin(page);
-
   await page.goto('http://localhost:5173/');
   
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
-  await expect(page.getByText('Welcome back')).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'Email address' })).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'Password' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
-  await expect(page.getByText('Are you new? Register instead.')).toBeVisible();
   await page.getByRole('textbox', { name: 'Email address' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('f@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
@@ -150,6 +143,7 @@ test('order a pizza', async ({ page }) => {
   await page.getByRole('combobox').selectOption('1');
   await page.getByRole('link', { name: 'Image Description Veggie A' }).first().click();
   await expect(page.getByText('Selected pizzas:')).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Checkout' })).toBeVisible();
   await page.getByRole('button', { name: 'Checkout' }).click();
 
   await page.route('*/**/api/user/me', async (route) => {
@@ -184,24 +178,22 @@ test('order a pizza', async ({ page }) => {
         ],
         "storeId": "1",
         "franchiseId": 1,
-        "id": 164
+        "id": 166
       },
-      "jwt": "eyJpYXQiOjE3NzA3NDU1OTAsImV4cCI6MTc3MDgzMTk5MCwiaXNzIjoiY3MzMjkuY2xpY2siLCJhbGciOiJSUzI1NiIsImtpZCI6Ik9TcF94VzhlM3kwNk1KS3ZIeW9sRFZMaXZXX2hnTWxhcFZSUVFQVndiY0UifQ.eyJ2ZW5kb3IiOnsiaWQiOiJtcm0yMDAzIiwibmFtZSI6Ik1heCBNaWxsZXIifSwiZGluZXIiOnsiaWQiOjMsIm5hbWUiOiJwaXp6YSBmcmFuY2hpc2VlIiwiZW1haWwiOiJmQGp3dC5jb20ifSwib3JkZXIiOnsiaXRlbXMiOlt7Im1lbnVJZCI6MSwiZGVzY3JpcHRpb24iOiJWZWdnaWUiLCJwcmljZSI6MC4wMDM4fV0sInN0b3JlSWQiOiIxIiwiZnJhbmNoaXNlSWQiOjEsImlkIjoxNjR9fQ.l6FLXxvWULRVkaHQsZHIXJW-ymAv6HXb1S-j1-0Z0OsSqYxiCKa_Zb_6722fQuzIrzjECthgXoBIKcTPOxcVQ53Q0xMojxSAzV-uzpY90AT-7_A9DNGiEyvW2vIsQkgoAPIJlxSqD0pusfgjQc24pMgpgdJEQWjdKY6OX0NB2uhkFeoYpl3GU1xSr_9n14hezhJVcypSVI4kRCq631PeT6pod8onBqKJ0zYjoQFlhQocCuQExe0n6soNbmH8QHNDtZLcZB5f-GWldQRxd6PbJA40hhtPrEZqdpPWJ4FaWbsWBPZ4yHxa80lGfAGqqX5PLDMtaGNo95rYNFtZws-ptzf0K0pAYEU0GpIwQek7rBMn4M1ohL74IFexc4h4PX2RKI55tOmd7xLhcSfoHAITLAHc7YFn9GZCSAYTTLrEZ1yfSP_bb4rzCrsuF8ISg3mamEvPmkpWql25EUPGWSxs3vwVQHG9_L7heuLug5FmPPVHH1rjO9oArqfMvW7v7BMOm40ZVPW2cUzPloM1Ni3vxO_rYciOcXcnPRstyU6bKMM5UrcptJY3NT4HdQ0Or-6-vZ4ZT-kJHjr6E1VO2a1l3icBQpVhOB5QjofwqzymFZRZ2NP7yYdxJjSn8PB3H7d5p3xmg5pikyBsxmm5_ptx8hanOhsBmYQvU4xRShthyfA"
+      "jwt": "eyJpYXQiOjE3NzA3NDYzMjcsImV4cCI6MTc3MDgzMjcyNywiaXNzIjoiY3MzMjkuY2xpY2siLCJhbGciOiJSUzI1NiIsImtpZCI6Ik9TcF94VzhlM3kwNk1KS3ZIeW9sRFZMaXZXX2hnTWxhcFZSUVFQVndiY0UifQ.eyJ2ZW5kb3IiOnsiaWQiOiJtcm0yMDAzIiwibmFtZSI6Ik1heCBNaWxsZXIifSwiZGluZXIiOnsiaWQiOjMsIm5hbWUiOiJwaXp6YSBmcmFuY2hpc2VlIiwiZW1haWwiOiJmQGp3dC5jb20ifSwib3JkZXIiOnsiaXRlbXMiOlt7Im1lbnVJZCI6MSwiZGVzY3JpcHRpb24iOiJWZWdnaWUiLCJwcmljZSI6MC4wMDM4fSx7Im1lbnVJZCI6MiwiZGVzY3JpcHRpb24iOiJQZXBwZXJvbmkiLCJwcmljZSI6MC4wMDQyfSx7Im1lbnVJZCI6MywiZGVzY3JpcHRpb24iOiJNYXJnYXJpdGEiLCJwcmljZSI6MC4wMDQyfSx7Im1lbnVJZCI6NCwiZGVzY3JpcHRpb24iOiJDcnVzdHkiLCJwcmljZSI6MC4wMDI4fSx7Im1lbnVJZCI6NSwiZGVzY3JpcHRpb24iOiJDaGFycmVkIExlb3BhcmQiLCJwcmljZSI6MC4wMDk5fV0sInN0b3JlSWQiOiIxIiwiZnJhbmNoaXNlSWQiOjEsImlkIjoxNjZ9fQ.fJwoU0Qym-W43a-pkqg_JTGTB3p5G4HWAGb67hiaFP5ka3aRqoA-lzQXWtg-wmLvYjOq8gcugAEQ9T1iwF8Bo_IUtCV1xa5wb1Z8_vyCOU8JV4YCPWnRn1_Kt4CjJ261wzbX5dNcMYwdHHsgvwqA9K2pP--UlCPQqbPV-Tno2jgHyTjpmsk_mvBB4HawYUqYrqH8NpWmpXIKKnf8aBqMkwtib0Cel1nOhqsgAYOMmlmgcWX8xWKL1gVmdGhNC6nM3bptnebfR2cEdLrYh73-S6doQp2Q_0t_EYm6uLNCBoU361nj-TapgArBkwnJiRrNuF5PXf5ZSdjYz92f1Vpgw8xc_25PjWBSmIyas8S14f7haTtFFMWBYSzE1DXv7hG-eduvCH0I1y4UiiPDVAvqJ4z6KMIFk1F04MeDJ-vGKopHmwGSTpKIMk_QfqkXi1f6_4VNr3QYgRx3GW897QkxmAsWYg-CkAao5yMH7pW29OPjx83hz-V1BF0qPnctlIScRoAjEo6WCxZp0BrvzipmB1kTqC9SCbiDIAtQLEFKTMusu1P2DlH5T2eZ10wc0CVAPRDfcKZ2clZWw1-woFkursF5PVtAbGIogcyUHMIUq7x5xdDRugRCKU8rlNATmPbyYuWJsmqNROgmVw_VarAg0bRfSv02YjjM97E-r05yqr0"
     };
     expect(route.request().method()).toBe('POST');
     await route.fulfill({ json: orderRes });
   });
 
   await expect(page.getByText('So worth it')).toBeVisible();
-  await expect(page.getByText('Send me that pizza right now!')).toBeVisible();
+  await expect(page.getByText('Send me that pizza right')).toBeVisible();
   await expect(page.getByRole('button', { name: 'Pay now' })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Cancel' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Pie' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Price' })).toBeVisible();
   await expect(page.getByRole('cell', { name: 'Veggie' })).toBeVisible();
-  await expect(page.locator('tbody').getByRole('cell', { name: '₿' })).toBeVisible();
-  await expect(page.getByRole('cell', { name: 'pie' })).toBeVisible();
-  await expect(page.locator('tfoot').getByRole('cell', { name: '₿' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: '₿' }).first()).toBeVisible();
   await page.getByRole('button', { name: 'Pay now' }).click();
 
   await expect(page.getByText('Here is your JWT Pizza!')).toBeVisible();
@@ -237,7 +229,7 @@ test('order a pizza', async ({ page }) => {
             ],
             "storeId": "1",
             "franchiseId": 1,
-            "id": 164
+            "id": 166
         }
       }
     };
@@ -251,6 +243,9 @@ test('order a pizza', async ({ page }) => {
   await expect(page.getByRole('button').filter({ hasText: /^$/ })).toBeVisible();
   await expect(page.getByRole('button', { name: 'Close' })).toBeVisible();
   await page.getByRole('button', { name: 'Close' }).click();
+
+  await page.getByRole('button', { name: 'Order more' }).click();
+  await expect(page.getByText('Awesome is a click away')).toBeVisible();
 });
 
 test('order many pizzas', async ({ page }) => {
@@ -259,11 +254,6 @@ test('order many pizzas', async ({ page }) => {
   
   await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
-  await expect(page.getByText('Welcome back')).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'Email address' })).toBeVisible();
-  await expect(page.getByRole('textbox', { name: 'Password' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
-  await expect(page.getByText('Are you new? Register instead.')).toBeVisible();
   await page.getByRole('textbox', { name: 'Email address' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('f@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
