@@ -1,6 +1,6 @@
 import { test, expect } from 'playwright-test-coverage';
 
-test('updateUser', async ({ page }) => {
+test('edit user button pops up and edits the users data', async ({ page }) => {
 
     await page.goto('http://localhost:5173/');
 
