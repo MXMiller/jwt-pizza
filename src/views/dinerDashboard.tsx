@@ -61,6 +61,7 @@ export default function DinerDashboard(props: Props) {
           <img className="hs-tooltip-toggle relative inline-block size-[96px] rounded-full ring-2 ring-white hover:z-10" src="https://images.unsplash.com/photo-1492562080023-ab3db95bfbce?ixlib=rb-4.0.3&ixid=MnwxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8&auto=format&fit=facearea&facepad=2&w=300&h=300&q=80" alt="Employee stock photo" />
         </div>
 
+        {/* user info */}
         <div className="my-4 text-lg text-orange-200 text-start grid grid-cols-5 gap-2">
           <div className="font-semibold text-orange-400">name:</div> <div className="col-span-4">{user.name}</div>
           <div className="font-semibold text-orange-400">email:</div> <div className="col-span-4">{user.email}</div>
@@ -75,6 +76,7 @@ export default function DinerDashboard(props: Props) {
           </div>
         </div>
 
+        {/* edit user */}
         <Button title="Edit" className="w-16 p-0" onPress={() => HSOverlay.open(document.getElementById('hs-jwt-modal')!)} />
         <div role="dialog" aria-modal="true" aria-labelledby="dialog-title" id="hs-jwt-modal" className="hs-overlay hidden size-full fixed top-10 start-0 z-[80] overflow-x-hidden overflow-y-auto pointer-events-none">
           <div className="hs-overlay-open:mt-7 hs-overlay-open:opacity-100 hs-overlay-open:duration-500 mt-0 opacity-0 ease-out transition-all sm:max-w-lg sm:w-full m-3 sm:mx-auto min-h-[calc(100%-3.5rem)]">
@@ -103,7 +105,8 @@ export default function DinerDashboard(props: Props) {
           </div>
         </div>
       </div>
-
+        
+        {/* user order history */}
         {orders?.length === 0 && (
           <div className="text-neutral-100">
             How have you lived this long without having a pizza?{' '}
