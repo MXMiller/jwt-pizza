@@ -31,13 +31,10 @@ test('edit user button pops up and edits the users data', async ({ page }) => {
 
     await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
     await page.getByRole('link', { name: 'Login' }).click();
-    await expect(page.getByRole('textbox', { name: 'Email address' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Email address' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('t@jwt.com');
-    await expect(page.getByRole('textbox', { name: 'Password' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Password' }).click();
     await page.getByRole('textbox', { name: 'Password' }).fill('test');
-    await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
     await page.getByRole('button', { name: 'Login' }).click();
 
     await expect(page.getByRole('link', { name: 't', exact: true })).toBeVisible();
@@ -98,24 +95,316 @@ test('admin dashboard shows user table', async ({ page }) => {
 
     await page.goto('http://localhost:5173/');
 
-    await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
+    await page.route('*/**/api/auth', async (route) => {
+    const loginAReq = { email: 'a@jwt.com', password: 'admin' };
+    const loginARes = {
+      "user": {
+        "id": 1,
+        "name": "常用名字",
+        "email": "a@jwt.com",
+        "roles": [
+            {
+                "role": "admin"
+            }
+        ]
+      },
+      "token": "abcdef"
+    };
+    expect(route.request().method()).toBe('PUT');
+    expect(route.request().postDataJSON()).toMatchObject(loginAReq);
+    await route.fulfill({ json: loginARes });
+  });
+    
     await page.getByRole('link', { name: 'Login' }).click();
-    await expect(page.getByRole('textbox', { name: 'Email address' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Email address' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
-    await expect(page.getByRole('textbox', { name: 'Password' })).toBeVisible();
     await page.getByRole('textbox', { name: 'Password' }).click();
     await page.getByRole('textbox', { name: 'Password' }).fill('admin');
-    await expect(page.getByRole('button', { name: 'Login' })).toBeVisible();
     await page.getByRole('button', { name: 'Login' }).click();
+
+    await page.route('*/**/api/franchise?page=0&limit=3&name=*', async (route) => {
+        const adminDashRes = {
+            "franchises": [
+                {
+                    "id": 155,
+                    "name": "Delete Store Franchise 0.5771646834308488",
+                    "stores": []
+                },
+                {
+                    "id": 156,
+                    "name": "Get Franchise Test 0.14974382269585973",
+                    "stores": [
+                        {
+                            "id": 135,
+                            "name": "Store 1"
+                        },
+                        {
+                            "id": 136,
+                            "name": "Store 2"
+                        }
+                    ]
+                },
+                {
+                    "id": 150,
+                    "name": "Multi Admin Franchise 0.008701185151275936",
+                    "stores": []
+                }
+            ],
+            "more": true
+        };
+        expect(route.request().method()).toBe('GET');
+        await route.fulfill({ json: adminDashRes });
+    });
+
+    await page.unroute('*/**/api/user?page=1&limit=3&name=*');
+    await page.route('*/**/api/user?page=0&limit=3&name=*', async (route) => {
+        const adminDashuserRes = {
+            "users": [
+                {
+                    "id": 1,
+                    "name": "常用名字",
+                    "email": "a@jwt.com",
+                    "password": "$2b$10$vIIDM.LCQ1xFus33nrFOhO3d6B0v8MdpjxBgsl0v25l9VFT5tAyEy",
+                    "roles": [
+                        {
+                            "role": "admin"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "password": "$2b$10$7HV92r1.dvjddFGpR6XjFuudwlzpmfUFnX0WWfhEUnFWl72tmdpL2",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "pizza franchisee",
+                    "email": "f@jwt.com",
+                    "password": "$2b$10$WIrt.P81TYgdpr3uvRUsVeVzA4owq5q3hyhuyICMTnRuMb18worZO",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        },
+                        {
+                            "role": "franchisee"
+                        }
+                    ]
+                }
+            ],
+           "more": true
+        };
+        expect(route.request().method()).toBe('GET');
+        await route.fulfill({ json: adminDashuserRes });
+    });
+
     await expect(page.getByRole('link', { name: 'Admin' })).toBeVisible();
     await page.getByRole('link', { name: 'Admin' }).click();
     await expect(page.getByRole('heading', { name: 'Users' })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: 'Name' })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: 'Email' })).toBeVisible();
     await expect(page.getByRole('columnheader', { name: 'Role' })).toBeVisible();
-    await expect(page.getByRole('textbox', { name: 'Filter users' })).toBeVisible();
-    await expect(page.getByRole('button', { name: 'Submit' }).nth(1)).toBeVisible();
+    await expect(page.getByRole('cell', { name: '常用名字' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'a@jwt.com' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'admin', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).first()).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'pizza diner' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'd@jwt.com' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner', exact: true })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).nth(1)).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'pizza franchisee' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'f@jwt.com' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner, franchisee' })).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).nth(2)).toBeVisible();
 
+    await page.unroute('*/**/api/user?page=1&limit=3&name=*');
+    await page.route('*/**/api/user?page=1&limit=3&name=*', async (route) => {
+        const adminDashuserRes = {
+            "users": [
+                {
+                    "id": 4,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "password": "$2b$10$LqkCx2sM1alNG2H6ykrwkeQmQHR0XOuWOz807EdmVXxVPurlkzEUW",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "password": "$2b$10$vU99Z5kYbrIP58MvRBfqjOIMJyTbX8ETcd7B5NRey3FGRXbubWal2",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                },
+                {
+                    "id": 6,
+                    "name": "pizza franchisee",
+                    "email": "f@jwt.com",
+                    "password": "$2b$10$kW5qp00xqeT.XVDPPatRROje5Ja1Ntz2.qc2kgoJwP7MNsmGabcX.",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                }
+            ],
+            "more": true
+        };
+        expect(route.request().method()).toBe('GET');
+        await route.fulfill({ json: adminDashuserRes });
+    });
 
+    await expect(page.getByRole('button', { name: '»' }).nth(1)).toBeVisible();
+    await page.getByRole('button', { name: '»' }).nth(1).click();
+    await expect(page.getByRole('cell', { name: 'pizza diner' }).first()).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'd@jwt.com' }).first()).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner' }).nth(1)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).first()).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'pizza franchisee' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'f@jwt.com' })).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner' }).nth(4)).toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).nth(2)).toBeVisible();
+
+    await page.unroute('*/**/api/user?page=0&limit=3&name=*');
+    await page.route('*/**/api/user?page=0&limit=3&name=*', async (route) => {
+        const adminDashuserRes = {
+            "users": [
+                {
+                    "id": 1,
+                    "name": "常用名字",
+                    "email": "a@jwt.com",
+                    "password": "$2b$10$vIIDM.LCQ1xFus33nrFOhO3d6B0v8MdpjxBgsl0v25l9VFT5tAyEy",
+                    "roles": [
+                        {
+                            "role": "admin"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "password": "$2b$10$7HV92r1.dvjddFGpR6XjFuudwlzpmfUFnX0WWfhEUnFWl72tmdpL2",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "pizza franchisee",
+                    "email": "f@jwt.com",
+                    "password": "$2b$10$WIrt.P81TYgdpr3uvRUsVeVzA4owq5q3hyhuyICMTnRuMb18worZO",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        },
+                        {
+                            "role": "franchisee"
+                        }
+                    ]
+                }
+            ],
+           "more": true
+        };
+        expect(route.request().method()).toBe('GET');
+        await route.fulfill({ json: adminDashuserRes });
+    });
+
+    await expect(page.getByRole('button', { name: '«' }).nth(1)).toBeVisible();
+    await page.getByRole('button', { name: '«' }).nth(1).click();
+
+    await page.route('*/**/api/user?page=0&limit=10&name=*diner*', async (route) => {
+        const adminDashuserRes = {
+            "users": [
+                {
+                    "id": 2,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "password": "$2b$10$7HV92r1.dvjddFGpR6XjFuudwlzpmfUFnX0WWfhEUnFWl72tmdpL2",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                },
+                {
+                    "id": 4,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "password": "$2b$10$LqkCx2sM1alNG2H6ykrwkeQmQHR0XOuWOz807EdmVXxVPurlkzEUW",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                },
+                {
+                    "id": 5,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "password": "$2b$10$vU99Z5kYbrIP58MvRBfqjOIMJyTbX8ETcd7B5NRey3FGRXbubWal2",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                }
+            ],
+           "more": true
+        };
+        expect(route.request().method()).toBe('GET');
+        await route.fulfill({ json: adminDashuserRes });
+    });
+
+    await page.getByRole('textbox', { name: 'Filter users' }).click();
+    await page.getByRole('textbox', { name: 'Filter users' }).fill('diner');
+    await page.getByRole('button', { name: 'Submit' }).nth(1).click();
+    await expect(page.getByRole('cell', { name: 'pizza diner' }).first()).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'd@jwt.com' }).first()).toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner' }).nth(1)).toBeVisible();
+    await expect(page.getByRole('cell', { name: '常用名字' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'a@jwt.com' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'admin', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'pizza franchisee' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'f@jwt.com' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner, franchisee' })).not.toBeVisible();
+
+    await page.route('*/**/api/user?page=0&limit=10&name=*aaaaaaaaaa*', async (route) => {
+        const adminDashuserRes = {
+            "users": [],
+           "more": false
+        };
+        expect(route.request().method()).toBe('GET');
+        await route.fulfill({ json: adminDashuserRes });
+    });
+
+    await page.getByRole('textbox', { name: 'Filter users' }).click();
+    await page.getByRole('textbox', { name: 'Filter users' }).fill('aaaaaaaaaa');
+    await page.getByRole('button', { name: 'Submit' }).nth(1).click();
+    await expect(page.getByRole('cell', { name: '常用名字' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'a@jwt.com' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'admin', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).first()).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'pizza diner' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'd@jwt.com' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner', exact: true })).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).nth(1)).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'pizza franchisee' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'f@jwt.com' })).not.toBeVisible();
+    await expect(page.getByRole('cell', { name: 'diner, franchisee' })).not.toBeVisible();
+    await expect(page.getByRole('button', { name: 'Delete User' }).nth(2)).not.toBeVisible();
 });
