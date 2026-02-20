@@ -401,6 +401,26 @@ test('admin dashboard delete user', async ({ page }) => {
 
     await page.goto('http://localhost:5173/');
 
+    await page.route('*/**/api/auth', async (route) => {
+        const loginAReq = { email: 'a@jwt.com', password: 'admin' };
+        const loginARes = {
+          "user": {
+            "id": 1,
+            "name": "常用名字",
+            "email": "a@jwt.com",
+            "roles": [
+                {
+                        "role": "admin"
+            }
+            ]
+          },
+          "token": "abcdef"
+        };
+        expect(route.request().method()).toBe('PUT');
+        expect(route.request().postDataJSON()).toMatchObject(loginAReq);
+        await route.fulfill({ json: loginARes });
+    });
+
     await page.getByRole('link', { name: 'Login' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).click();
     await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');

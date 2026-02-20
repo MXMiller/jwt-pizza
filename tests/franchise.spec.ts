@@ -810,7 +810,7 @@ test('admin view admin page', async ({ page }) => {
   await expect(page.getByRole('columnheader', { name: 'Franchise', exact: true })).toBeVisible();
   await expect(page.getByRole('cell', { name: 'pizzaPocket' })).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Franchisee' })).toBeVisible();
-  await expect(page.getByRole('cell', { name: 'pizza franchisee' })).toBeVisible();
+  await expect(page.getByRole('cell', { name: 'pizza franchisee' }).first()).toBeVisible();
   await expect(page.getByRole('columnheader', { name: 'Store' })).toBeVisible();
   await expect(page.getByRole('cell', { name: 'SLC' })).toBeVisible();
   await expect(page.getByRole('cell', { name: 'PROVO' })).toBeVisible();
