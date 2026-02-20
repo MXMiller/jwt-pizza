@@ -230,6 +230,48 @@ async function mockStartingAdminPage(page: Page) {
     expect(route.request().method()).toBe('GET');
     await route.fulfill({ json: adminRes });
   });
+  await page.route('*/**/api/user?page=0&limit=3&name=*', async (route) => {
+        const adminDashuserRes = {
+            "users": [
+                {
+                    "id": 1,
+                    "name": "常用名字",
+                    "email": "a@jwt.com",
+                    "roles": [
+                        {
+                            "role": "admin"
+                        }
+                    ]
+                },
+                {
+                    "id": 2,
+                    "name": "pizza diner",
+                    "email": "d@jwt.com",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        }
+                    ]
+                },
+                {
+                    "id": 3,
+                    "name": "pizza franchisee",
+                    "email": "f@jwt.com",
+                    "roles": [
+                        {
+                            "role": "diner"
+                        },
+                        {
+                            "role": "franchisee"
+                        }
+                    ]
+                }
+            ],
+           "more": true
+        };
+        expect(route.request().method()).toBe('GET');
+        await route.fulfill({ json: adminDashuserRes });
+    });
 }
 
 
@@ -774,7 +816,7 @@ test('admin view admin page', async ({ page }) => {
   await expect(page.getByRole('cell', { name: 'PROVO' })).toBeVisible();
   await expect(page.getByRole('row', { name: 'pizzaPocket pizza franchisee' }).getByRole('button')).toBeVisible();
   await expect(page.getByRole('textbox', { name: 'Filter franchises' })).toBeVisible();
-  await expect(page.getByRole('button', { name: 'Submit' })).toBeVisible();
+  await expect(page.getByRole('button', { name: 'Submit' }).first()).toBeVisible();
   await expect(page.getByRole('button', { name: 'Add Franchise' })).toBeVisible();
   await expect(page.getByRole('link', { name: 'admin-dashboard' })).toBeVisible();
 });
@@ -1595,6 +1637,7 @@ test('franchise user role updates when an admin makes them a franchisee', async 
     await route.fulfill({ json: loginFRes });
   });
 
+  await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('f2@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
@@ -1619,6 +1662,7 @@ test('franchise user role updates when an admin makes them a franchisee', async 
   await page.unroute('*/**/api/auth');
   await mockAdminLogin(page);
 
+  await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('a@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
@@ -1708,6 +1752,7 @@ test('franchise user role updates when an admin makes them a franchisee', async 
     await route.fulfill({ json: loginFRes });
   });
 
+  await expect(page.getByRole('link', { name: 'Login' })).toBeVisible();
   await page.getByRole('link', { name: 'Login' }).click();
   await page.getByRole('textbox', { name: 'Email address' }).fill('f2@jwt.com');
   await page.getByRole('textbox', { name: 'Password' }).click();
