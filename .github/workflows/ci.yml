@@ -30,7 +30,6 @@ jobs:
       - name: Build
         run: |
           npm ci && npm run build
-          cp dist/index.html dist/404.html
 
       - name: Update dist artifact
         uses: actions/upload-pages-artifact@v4
@@ -40,7 +39,6 @@ jobs:
 
       - name: Run tests
         run: |
-          
           npx playwright install --with-deps chromium
           npm run test:coverage
 
